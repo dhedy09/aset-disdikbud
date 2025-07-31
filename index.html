@@ -5,111 +5,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aplikasi Aset Disdikbud</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
-
-  <style>
-    :root { color-scheme: dark; }
-    body {
-      background-color: #1f2937;
-      color: #f9fafb;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .fade-in {
-      animation: fadeIn 0.8s ease-in-out forwards;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center">
-  <div class="absolute top-4 left-4">
-    <h1 class="text-2xl font-bold">Selamat Datang di Aplikasi Aset Disdikbud</h1>
-  </div>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
 
-  <div class="absolute top-4 right-4 flex items-center space-x-2">
-    <label for="kodeInput" class="text-sm">Kode Akses:</label>
-    <input id="kodeInput" type="text" class="p-1 rounded bg-gray-700 text-white text-sm focus:outline-none" />
-    <button onclick="cekKode()" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-sm">
-      <i class="fas fa-sign-in-alt"></i>
-    </button>
-    <span id="aksesDisplay" class="text-xs text-gray-400"></span>
-  </div>
+  <div class="bg-gray-800 p-8 rounded-xl shadow-xl w-full max-w-xl relative">
 
-  <div class="w-full max-w-md bg-gray-800 rounded-2xl p-6 shadow-lg fade-in">
-    <div id="loginSection">
-      <p id="pesan" class="text-red-400 text-sm mb-4"></p>
-    </div>
+    <!-- Kode Akses di kanan atas -->
+    <div class="absolute top-4 right-4 text-sm text-gray-400" id="kodeAksesTampil">kode</div>
 
-    <div id="dataSection" class="hidden text-center">
-      <h2 id="namaSekolah" class="text-lg font-semibold mb-2"></h2>
-      <p class="mb-4">Silakan klik tombol di bawah ini untuk memproses data Anda.</p>
-      <button onclick="kirimData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-        <i class="fas fa-file-upload mr-2"></i>Input Data
+    <!-- Judul utama -->
+    <h1 class="text-center text-2xl font-bold mb-4">
+      Selamat Datang di Aplikasi Aset Disdikbud
+    </h1>
+
+    <!-- Info Sekolah -->
+    <div class="text-center text-xl font-semibold mb-2" id="infoSekolah">Memuat data...</div>
+    <p class="text-center text-gray-300 mb-6">
+      Silakan klik tombol di bawah ini untuk memproses data Anda.
+    </p>
+
+    <!-- Tombol -->
+    <div class="flex justify-center">
+      <button id="btnInput" onclick="kirimData()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md focus:outline-none">
+        Input Data
       </button>
-      <p id="statusKirim" class="text-sm text-green-400 mt-3"></p>
     </div>
+
+    <!-- Status -->
+    <p id="status" class="text-center text-green-400 mt-4"></p>
   </div>
 
   <script>
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
-    const webAppURL = 'https://script.google.com/macros/s/AKfycbyN_uEIh80qZPaF7gh1MXoF4e6JHIMWSfaAz8bzw1kKNyytAyTVShvBYEsEZv1k_loQ/exec';
-    let dataAkses = [];
-    let dataTerpilih = null;
+    // URL Google Apps Script Web App (REPLACE jika berubah)
+    const webAppURL = "https://script.google.com/macros/s/AKfycbyN_uEIh80qZPaF7gh1MXoF4e6JHIMWSfaAz8bzw1kKNyytAyTVShvBYEsEZv1k_loQ/exec";
 
+    // Ambil kode akses dari query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const kodeAkses = urlParams.get("kode") || "";
+
+    // Tampilkan kode akses di kanan atas
+    document.getElementById("kodeAksesTampil").innerText = kodeAkses;
+
+    // Ambil data metadata dari Google Sheet
     async function ambilData() {
-      const res = await fetch(sheetUrl);
-      const text = await res.text();
-      const rows = text.split('\n').map(r => r.split(','));
-      const headers = rows[0];
-      const result = rows.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h.trim(), row[i]?.trim()])));
-      return result;
-    }
+      try {
+        const res = await fetch("https://opensheet.elk.sh/1m-zYNnACJ87FpQCu9UAmgrpPP3xPZzG-OnHUcbWmJuc/sheet1");
+        const data = await res.json();
+        const dataTerpilih = data.find(item => item.kode_akses === kodeAkses);
 
-    async function cekKode() {
-      const kode = document.getElementById('kodeInput').value.trim();
-      const pesan = document.getElementById('pesan');
-      const aksesDisplay = document.getElementById('aksesDisplay');
-      pesan.textContent = '';
-
-      if (!dataAkses.length) dataAkses = await ambilData();
-
-      const ditemukan = dataAkses.find(d => d.kode_akses === kode);
-      if (ditemukan) {
-        dataTerpilih = ditemukan;
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('dataSection').classList.remove('hidden');
-        document.getElementById('namaSekolah').textContent = `${ditemukan.nama_sekolah} ${ditemukan.kecamatan}`;
-        aksesDisplay.textContent = kode;
-      } else {
-        pesan.textContent = 'Kode akses tidak valid.';
+        if (dataTerpilih) {
+          document.getElementById("infoSekolah").innerText = `${dataTerpilih.nomor}. ${dataTerpilih.nama_sekolah} KEC.${dataTerpilih.kecamatan.toUpperCase()}`;
+          window.dataTerpilih = dataTerpilih; // simpan global
+        } else {
+          document.getElementById("infoSekolah").innerText = "Kode akses tidak ditemukan.";
+        }
+      } catch (error) {
+        document.getElementById("infoSekolah").innerText = "Gagal memuat data.";
       }
     }
 
+    ambilData();
+
+    // Fungsi kirim data
     async function kirimData() {
-      if (!dataTerpilih) return;
-      const status = document.getElementById('statusKirim');
-      status.textContent = 'Memproses...';
+      const btn = document.getElementById("btnInput");
+      const status = document.getElementById("status");
+      btn.disabled = true;
+      status.innerText = "Memproses...";
 
       try {
+        const data = window.dataTerpilih;
+        if (!data) throw new Error("Data tidak tersedia.");
+
         const res = await fetch(webAppURL, {
-          method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
           body: new URLSearchParams({
-            kode_akses: dataTerpilih.kode_akses,
-            nama_sekolah: dataTerpilih.nama_sekolah,
-            kecamatan: dataTerpilih.kecamatan,
-            operator: dataTerpilih.operator
+            kode_akses: data.kode_akses,
+            nama_sekolah: data.nama_sekolah,
+            kecamatan: data.kecamatan,
+            operator: data.operator
           })
         });
-        const hasil = await res.text();
-        status.textContent = hasil;
-      } catch (e) {
-        status.textContent = 'Gagal mengirim data. Periksa koneksi atau izin akses.';
+
+        const json = await res.json();
+        if (json.success) {
+          status.innerHTML = `<a href="${json.link}" target="_blank" class="underline text-blue-400">File berhasil dibuat! Klik di sini</a>`;
+        } else {
+          status.innerText = "Gagal: " + (json.error || "Tidak diketahui.");
+        }
+      } catch (err) {
+        status.innerText = "Terjadi kesalahan: " + err.message;
+      } finally {
+        btn.disabled = false;
       }
     }
   </script>
+
 </body>
 </html>
