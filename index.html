@@ -157,13 +157,15 @@
     <div id="result-box">
       <div id="school-name"></div>
       <div id="info-text">Silahkan Klik Tombol di bawah ini</div>
-      <button id="openLink" onclick="bukaLink()"><i class="fas fa-pen"></i> Input Data</button>
+      <button id="openLink" onclick="buatFile()"><i class="fas fa-pen"></i> Input Data</button>
     </div>
   </main>
 
   <script>
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyN_uEIh80qZPaF7gh1MXoF4e6JHIMWSfaAz8bzw1kKNyytAyTVShvBYEsEZv1k_loQ/exec';
     let dataSekolah = [];
+    let dataTerpilih = null;
 
     async function ambilData() {
       const res = await fetch(CSV_URL);
@@ -186,21 +188,37 @@
 
       const hasil = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
       if (hasil) {
+        dataTerpilih = hasil;
         document.getElementById('school-name').innerText = hasil.nama_sekolah;
-        document.getElementById('openLink').setAttribute('data-link', hasil.alamat_link);
         document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
         document.getElementById('kodeLabel').style.display = 'inline-block';
         document.getElementById('login-box').style.display = 'none';
-        const box = document.getElementById('result-box');
-        box.classList.add('show');
+        document.getElementById('result-box').classList.add('show');
       } else {
         alert('Kode akses tidak ditemukan.');
       }
     }
 
-    function bukaLink() {
-      const link = document.getElementById('openLink').getAttribute('data-link');
-      window.open(link, '_blank');
+    async function buatFile() {
+      if (!dataTerpilih) return;
+      const response = await fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kode_akses: dataTerpilih.kode_akses,
+          nama_sekolah: dataTerpilih.nama_sekolah,
+          kecamatan: dataTerpilih.kecamatan,
+          operator: dataTerpilih.operator
+        })
+      });
+
+      const hasil = await response.json();
+      if (hasil.success && hasil.url_file) {
+        window.open(hasil.url_file, '_blank');
+      } else {
+        alert('Terjadi kesalahan saat membuat file.');
+        console.error(hasil);
+      }
     }
 
     document.getElementById('toggleMode').onclick = () => {
