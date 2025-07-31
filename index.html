@@ -144,6 +144,10 @@
     <div id="kodeLabel" style="display:none;"></div>
   </header>
 
+  <div id="loading" style="display:none;position:fixed;top:0;left:0;right:0;padding:10px;background:#222;color:white;text-align:center;z-index:9999;">
+  Mohon tunggu, sedang memuat data...
+  </div>
+
   <main>
     <div id="login-box">
       <h2><i class="fas fa-key"></i> Masukkan Kode Akses</h2>
@@ -200,18 +204,22 @@
   }
   
   async function bukaLink() {
-    const raw = document.getElementById('openLink').getAttribute('data');
-    if (!raw) return;
-    const data = JSON.parse(raw);
+    const loading = document.getElementById('loading');
+    loading.style.display = 'block'; // Tampilkan notifikasi
   
-    const statusEl = document.getElementById('statusMessage');
-    statusEl.innerText = "Mohon tunggu, sedang memuat data..."; // Tampilkan pesan loading
+    try {
+      const raw = document.getElementById('openLink').getAttribute('data');
+      if (!raw) {
+        loading.style.display = 'none';
+        return;
+      }
   
-    if (data.alamat_link && data.alamat_link.startsWith('http')) {
-      statusEl.innerText = ""; // Kosongkan pesan sebelum membuka link
-      window.open(data.alamat_link, '_blank');
-    } else {
-      try {
+      const data = JSON.parse(raw);
+  
+      if (data.alamat_link && data.alamat_link.startsWith('http')) {
+        loading.style.display = 'none';
+        window.open(data.alamat_link, '_blank');
+      } else {
         const res = await fetch(WEB_APP_URL, {
           method: 'POST',
           body: JSON.stringify({
@@ -222,17 +230,18 @@
           })
         });
         const json = await res.json();
-        statusEl.innerText = ""; // Hapus pesan setelah selesai
+  
+        loading.style.display = 'none';
   
         if (json.success && json.url) {
           window.open(json.url, '_blank');
         } else {
           alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
         }
-      } catch (err) {
-        statusEl.innerText = ""; // Hapus pesan jika error
-        alert('Terjadi kesalahan: ' + err.message);
       }
+    } catch (err) {
+      loading.style.display = 'none';
+      alert('Terjadi kesalahan: ' + err.message);
     }
   }
   
