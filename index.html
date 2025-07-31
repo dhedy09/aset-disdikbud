@@ -160,83 +160,78 @@
   </main>
 
   <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
-    const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwQi1WI__3-1CePTePIIvT55g5YASBlTDrCmttVyPK7FbYy2EB4XbqLovr3w_TRSi-sUA/exec';
-    let dataSekolah = [];
-    let dataTerpilih = null;
-
-    async function ambilData() {
-      const res = await fetch(CSV_URL);
-      const text = await res.text();
-      const rows = text.trim().split('\n').map(row => row.split(','));
-      const headers = rows[0];
-      return rows.slice(1).map(row => {
-        const obj = {};
-        headers.forEach((h, i) => {
-          let val = row[i]?.trim();
-          if (val?.startsWith('"') && val?.endsWith('"')) {
-            val = val.slice(1, -1);
-          }
-          obj[h.trim()] = val;
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwQi1WI__3-1CePTePIIvT55g5YASBlTDrCmttVyPK7FbYy2EB4XbqLovr3w_TRSi-sUA/exec';
+  
+  let dataSekolah = [];
+  
+  async function ambilData() {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(row => row.split(','));
+    const headers = rows[0];
+    return rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
+      return obj;
+    });
+  }
+  
+  async function cekKode() {
+    const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
+    if (!kode) return alert("Silakan masukkan kode akses.");
+  
+    if (!dataSekolah.length) {
+      try { dataSekolah = await ambilData(); } 
+      catch (e) { alert('Gagal mengambil data: ' + e); return; }
+    }
+  
+    const hasil = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
+    if (hasil) {
+      document.getElementById('school-name').innerText = hasil.nama_sekolah;
+      document.getElementById('openLink').setAttribute('data', JSON.stringify(hasil));
+      document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
+      document.getElementById('kodeLabel').style.display = 'inline-block';
+      document.getElementById('login-box').style.display = 'none';
+      document.getElementById('result-box').classList.add('show');
+    } else {
+      alert('Kode akses tidak ditemukan.');
+    }
+  }
+  
+  async function bukaLink() {
+    const raw = document.getElementById('openLink').getAttribute('data');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+  
+    if (data.alamat_link && data.alamat_link.startsWith('http')) {
+      window.open(data.alamat_link, '_blank');
+    } else {
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            kode_akses: data.kode_akses,
+            nama_sekolah: data.nama_sekolah,
+            kecamatan: data.kecamatan,
+            operator: data.operator
+          })
         });
-        return obj;
-      });
-    }
-
-    async function cekKode() {
-      const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
-      if (!dataSekolah.length) {
-        try { dataSekolah = await ambilData(); } 
-        catch (e) { alert('Gagal mengambil data: ' + e); return; }
-      }
-
-      dataTerpilih = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
-      if (dataTerpilih) {
-        document.getElementById('school-name').innerText = dataTerpilih.nama_sekolah;
-        const cleanLink = (dataTerpilih.alamat_link || '').replace(/^"+|"+$/g, '');
-        document.getElementById('openLink').setAttribute('data-link', cleanLink);
-        document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
-        document.getElementById('kodeLabel').style.display = 'inline-block';
-        document.getElementById('login-box').style.display = 'none';
-        document.getElementById('result-box').classList.add('show');
-      } else {
-        alert('Kode akses tidak ditemukan.');
-      }
-    }
-
-    async function bukaLink() {
-      let link = document.getElementById('openLink').getAttribute('data-link');
-      link = link.replace(/^"+|"+$/g, '');
-      if (link) {
-        window.open(link, '_blank');
-      } else if (dataTerpilih) {
-        const kirim = {
-          kode_akses: dataTerpilih.kode_akses,
-          nama_sekolah: dataTerpilih.nama_sekolah,
-          kecamatan: dataTerpilih.kecamatan,
-          operator: dataTerpilih.operator
-        };
-        try {
-          const res = await fetch(WEBAPP_URL, {
-            method: 'POST',
-            body: JSON.stringify(kirim),
-            headers: { 'Content-Type': 'application/json' }
-          });
-          const hasil = await res.json();
-          if (hasil.success && hasil.url) {
-            window.open(hasil.url, '_blank');
-          } else {
-            alert('Gagal membuat file: ' + hasil.error);
-          }
-        } catch (e) {
-          alert('Terjadi kesalahan: ' + e);
+        const json = await res.json();
+        if (json.success && json.url) {
+          window.open(json.url, '_blank');
+        } else {
+          alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
         }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
       }
     }
-
-    document.getElementById('toggleMode').onclick = () => {
-      document.body.classList.toggle('dark');
-    };
+  }
+  
+  document.getElementById('toggleMode').onclick = () => {
+    document.body.classList.toggle('dark');
+  };
   </script>
 
 </body>
