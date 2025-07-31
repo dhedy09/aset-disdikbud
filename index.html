@@ -203,8 +203,9 @@
   async function bukaLink() {
     const raw = document.getElementById('openLink').getAttribute('data');
     if (!raw) return;
-    const data = JSON.parse(raw);
+    let data = JSON.parse(raw);
   
+    // Jika sudah ada link, langsung buka
     if (data.alamat_link && data.alamat_link.startsWith('http')) {
       window.open(data.alamat_link, '_blank');
       return;
@@ -227,8 +228,14 @@
       const json = await res.json();
       if (json.success && json.url) {
         alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
-        // Refresh data agar alamat_link baru terbaca saat klik ulang
-        dataSekolah = await ambilData();
+  
+        // Segarkan data dari spreadsheet setelah file dibuat
+        const refreshed = await ambilData();
+        const updated = refreshed.find(x => x.kode_akses === data.kode_akses);
+        if (updated) {
+          data = updated;
+          document.getElementById('openLink').setAttribute('data', JSON.stringify(data));
+        }
       } else {
         alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
       }
