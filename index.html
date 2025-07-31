@@ -236,7 +236,7 @@
         alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
   
         // Tunggu 2–3 detik sebelum ambil ulang (berikan waktu Google Sheets update)
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 6000));
   
         // Ambil data terbaru setelah file berhasil dibuat
         semuaData = await ambilData();
