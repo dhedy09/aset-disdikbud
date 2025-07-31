@@ -208,9 +208,9 @@
     const tombol = document.getElementById('openLink');
     let data = JSON.parse(tombol.getAttribute('data'));
   
-    // Ambil data terkini dari spreadsheet
-    const semuaData = await ambilData();
-    const dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
+    // Ambil data terbaru dari spreadsheet
+    let semuaData = await ambilData();
+    let dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
   
     if (dataTerbaru?.alamat_link && dataTerbaru.alamat_link.startsWith('http')) {
       window.open(dataTerbaru.alamat_link, '_blank');
@@ -235,11 +235,15 @@
       if (json.success && json.url) {
         alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
   
-        // Ambil ulang data dari spreadsheet untuk update alamat_link
-        const hasilRefresh = await ambilData();
-        const dataBaru = hasilRefresh.find(x => x.kode_akses === data.kode_akses);
-        if (dataBaru) {
-          tombol.setAttribute('data', JSON.stringify(dataBaru));
+        // Tunggu 2–3 detik sebelum ambil ulang (berikan waktu Google Sheets update)
+        await new Promise(resolve => setTimeout(resolve, 3000));
+  
+        // Ambil data terbaru setelah file berhasil dibuat
+        semuaData = await ambilData();
+        dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
+  
+        if (dataTerbaru) {
+          tombol.setAttribute('data', JSON.stringify(dataTerbaru));
         }
       } else {
         alert("Gagal membuat file: " + (json.error || "Tidak diketahui"));
