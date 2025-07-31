@@ -1,212 +1,110 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aplikasi Aset Disdikbud</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6adcf.js" crossorigin="anonymous"></script>
   <style>
     :root {
-      --bg-light: #f4f6f8;
-      --bg-dark: #1e1e2f;
-      --card-light: #fff;
-      --card-dark: #2c2c3e;
-      --text-light: #2e2e2e;
-      --text-dark: #eaeaea;
-      --accent: #3246a8;
-      --accent-hover: #2a3c91;
+      color-scheme: dark;
     }
-
     body {
-      margin: 0;
-      padding: 0;
+      background-color: #1f2937;
+      color: #f9fafb;
       font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-light);
-      transition: background-color 0.4s, color 0.4s;
     }
-
-    body.dark {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
+    .fade-in {
+      animation: fadeIn 0.8s ease-in-out forwards;
     }
-
-    header {
-      background-color: var(--accent);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      position: relative;
-      transition: background-color 0.3s;
-    }
-
-    #kodeLabel {
-      position: absolute;
-      right: 30px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      background-color: rgba(255,255,255,0.15);
-      padding: 6px 12px;
-      border-radius: 20px;
-    }
-
-    #toggleMode {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: white;
-      font-size: 18px;
-    }
-
-    main {
-      max-width: 500px;
-      margin: 60px auto;
-      background-color: var(--card-light);
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      text-align: center;
-      transition: background-color 0.4s;
-    }
-
-    body.dark main {
-      background-color: var(--card-dark);
-    }
-
-    input[type="text"] {
-      width: 80%;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    button {
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background-color: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-
-    #result-box {
-      display: none;
-      margin-top: 30px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.4s ease-in-out;
-    }
-
-    #result-box.show {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #school-name {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-
-    #info-text {
-      margin: 10px 0 20px;
-      font-size: 16px;
-    }
-
-    @media (max-width: 600px) {
-      #kodeLabel {
-        position: static;
-        display: block;
-        margin-top: 10px;
-        transform: none;
-      }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body>
-
-  <header>
-    <i class="fas fa-school" id="toggleMode" title="Ganti Mode"></i>
-    Selamat Datang di Aplikasi Aset Disdikbud
-    <div id="kodeLabel" style="display:none;"></div>
-  </header>
-
-  <main>
-    <div id="login-box">
-      <h2><i class="fas fa-key"></i> Masukkan Kode Akses</h2>
-      <input type="text" id="kodeAkses" placeholder="Contoh: abc2">
-      <br>
-      <button onclick="cekKode()"><i class="fas fa-check"></i> Tampilkan</button>
+<body class="min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md bg-gray-800 rounded-2xl p-6 shadow-lg fade-in">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-xl font-bold">Selamat Datang di Aplikasi Aset Disdikbud</h1>
+      <span id="aksesDisplay" class="text-sm text-gray-400"></span>
     </div>
 
-    <div id="result-box">
-      <div id="school-name"></div>
-      <div id="info-text">Silahkan Klik Tombol di bawah ini</div>
-      <button id="openLink" onclick="bukaLink()"><i class="fas fa-pen"></i> Input Data</button>
+    <div id="loginSection">
+      <label for="kodeInput" class="block mb-2">Masukkan Kode Akses:</label>
+      <input id="kodeInput" type="text" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none" />
+      <button onclick="cekKode()" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+        <i class="fas fa-sign-in-alt mr-2"></i>Masuk
+      </button>
+      <p id="pesan" class="text-red-400 text-sm mt-2"></p>
     </div>
-  </main>
+
+    <div id="dataSection" class="hidden">
+      <div class="text-center">
+        <h2 id="namaSekolah" class="text-lg font-semibold mb-2"></h2>
+        <p class="mb-4">Silahkan Klik Tombol di bawah ini</p>
+        <button onclick="kirimData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+          <i class="fas fa-file-upload mr-2"></i>Input Data
+        </button>
+        <p id="statusKirim" class="text-sm text-green-400 mt-3"></p>
+      </div>
+    </div>
+  </div>
 
   <script>
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
-    let dataSekolah = [];
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
+    const webAppURL = 'https://script.google.com/macros/s/AKfycbyN_uEIh80qZPaF7gh1MXoF4e6JHIMWSfaAz8bzw1kKNyytAyTVShvBYEsEZv1k_loQ/exec';
+    let dataAkses = [];
+    let dataTerpilih = null;
 
     async function ambilData() {
-      const res = await fetch(CSV_URL);
+      const res = await fetch(sheetUrl);
       const text = await res.text();
-      const rows = text.trim().split('\n').map(row => row.split(','));
+      const rows = text.split('\n').map(r => r.split(','));
       const headers = rows[0];
-      return rows.slice(1).map(row => {
-        const obj = {};
-        headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
-        return obj;
-      });
+      const result = rows.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h.trim(), row[i]?.trim()])));
+      return result;
     }
 
     async function cekKode() {
-      const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
-      if (!dataSekolah.length) {
-        try { dataSekolah = await ambilData(); } 
-        catch (e) { alert('Gagal mengambil data: ' + e); return; }
-      }
+      const kode = document.getElementById('kodeInput').value.trim();
+      const pesan = document.getElementById('pesan');
+      const aksesDisplay = document.getElementById('aksesDisplay');
+      pesan.textContent = '';
 
-      const hasil = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
-      if (hasil) {
-        document.getElementById('school-name').innerText = hasil.nama_sekolah;
-        document.getElementById('openLink').setAttribute('data-link', hasil.alamat_link);
-        document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
-        document.getElementById('kodeLabel').style.display = 'inline-block';
-        document.getElementById('login-box').style.display = 'none';
-        const box = document.getElementById('result-box');
-        box.classList.add('show');
+      if (!dataAkses.length) dataAkses = await ambilData();
+
+      const ditemukan = dataAkses.find(d => d.kode_akses === kode);
+      if (ditemukan) {
+        dataTerpilih = ditemukan;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('dataSection').classList.remove('hidden');
+        document.getElementById('namaSekolah').textContent = ditemukan.nama_sekolah;
+        aksesDisplay.textContent = kode;
       } else {
-        alert('Kode akses tidak ditemukan.');
+        pesan.textContent = 'Kode akses tidak valid.';
       }
     }
 
-    function bukaLink() {
-      const link = document.getElementById('openLink').getAttribute('data-link');
-      window.open(link, '_blank');
+    async function kirimData() {
+      if (!dataTerpilih) return;
+      const status = document.getElementById('statusKirim');
+      status.textContent = 'Memproses...';
+
+      const res = await fetch(webAppURL, {
+        method: 'POST',
+        body: new URLSearchParams({
+          kode_akses: dataTerpilih.kode_akses,
+          nama_sekolah: dataTerpilih.nama_sekolah,
+          kecamatan: dataTerpilih.kecamatan,
+          operator: dataTerpilih.operator
+        })
+      });
+
+      const hasil = await res.text();
+      status.textContent = hasil;
     }
-
-    document.getElementById('toggleMode').onclick = () => {
-      document.body.classList.toggle('dark');
-    };
   </script>
-
 </body>
 </html>
