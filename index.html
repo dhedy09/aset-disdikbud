@@ -190,7 +190,7 @@
     if (hasil) {
       document.getElementById('school-name').innerText = hasil.nama_sekolah;
       document.getElementById('openLink').setAttribute('data', JSON.stringify(hasil));
-      document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
+      document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + hasil.kode_akses;
       document.getElementById('kodeLabel').style.display = 'inline-block';
       document.getElementById('login-box').style.display = 'none';
       document.getElementById('result-box').classList.add('show');
@@ -204,7 +204,11 @@
     if (!raw) return;
     const data = JSON.parse(raw);
   
+    const statusEl = document.getElementById('statusMessage');
+    statusEl.innerText = "Mohon tunggu, sedang memuat data..."; // Tampilkan pesan loading
+  
     if (data.alamat_link && data.alamat_link.startsWith('http')) {
+      statusEl.innerText = ""; // Kosongkan pesan sebelum membuka link
       window.open(data.alamat_link, '_blank');
     } else {
       try {
@@ -218,12 +222,15 @@
           })
         });
         const json = await res.json();
+        statusEl.innerText = ""; // Hapus pesan setelah selesai
+  
         if (json.success && json.url) {
           window.open(json.url, '_blank');
         } else {
           alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
         }
       } catch (err) {
+        statusEl.innerText = ""; // Hapus pesan jika error
         alert('Terjadi kesalahan: ' + err.message);
       }
     }
