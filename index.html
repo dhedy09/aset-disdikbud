@@ -162,7 +162,7 @@
       <div style="height: 20px; width: 100%; background: #ccc; border-radius: 10px; overflow: hidden;">
         <div id="progress-fill" style="width: 0%; height: 100%; background: #4caf50; transition: width 0.4s;"></div>
       </div>
-      <p style="text-align: center; margin: 5px 0 0;">Sedang memuat data, mohon tunggu...</p>
+      <p id="status-text" style="text-align: center; margin: 5px 0 0; font-weight: bold;"></p>
     </div>
   </main>
 
@@ -211,13 +211,29 @@
     if (!raw) return;
     const data = JSON.parse(raw);
   
+    const loadingBar = document.getElementById('loading-bar');
+    const progressFill = document.getElementById('progress-fill');
+    const statusText = document.getElementById('status-text');
+  
+    // Cek apakah file sudah ada
     if (data.alamat_link && data.alamat_link.startsWith('http')) {
-      window.open(data.alamat_link, '_blank');
+      // Status membuka file
+      statusText.innerText = 'Membuka file...';
+      loadingBar.style.display = 'block';
+      progressFill.style.width = '100%';
+  
+      setTimeout(() => {
+        loadingBar.style.display = 'none';
+        progressFill.style.width = '0%';
+        window.open(data.alamat_link, '_blank');
+      }, 500);
+  
     } else {
       try {
-        // Tampilkan progress bar
-        document.getElementById('loading-bar').style.display = 'block';
-        document.getElementById('progress-fill').style.width = '30%';
+        // Status membuat file
+        statusText.innerText = 'Sedang membuat file, mohon tunggu...';
+        loadingBar.style.display = 'block';
+        progressFill.style.width = '30%';
   
         const res = await fetch(WEB_APP_URL, {
           method: 'POST',
@@ -229,23 +245,23 @@
           })
         });
   
-        document.getElementById('progress-fill').style.width = '70%';
+        progressFill.style.width = '70%';
   
         const json = await res.json();
   
         if (json.success && json.url) {
-          document.getElementById('progress-fill').style.width = '100%';
+          progressFill.style.width = '100%';
           setTimeout(() => {
-            document.getElementById('loading-bar').style.display = 'none';
-            document.getElementById('progress-fill').style.width = '0%';
+            loadingBar.style.display = 'none';
+            progressFill.style.width = '0%';
             window.open(json.url, '_blank');
           }, 500);
         } else {
-          document.getElementById('loading-bar').style.display = 'none';
+          loadingBar.style.display = 'none';
           alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
         }
       } catch (err) {
-        document.getElementById('loading-bar').style.display = 'none';
+        loadingBar.style.display = 'none';
         alert('Terjadi kesalahan: ' + err.message);
       }
     }
