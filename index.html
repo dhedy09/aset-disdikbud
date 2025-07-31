@@ -208,18 +208,7 @@
     const tombol = document.getElementById('openLink');
     const data = JSON.parse(tombol.getAttribute('data'));
   
-    const semuaData = await ambilData();
-    const dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
-  
-    console.log("Kode akses:", data.kode_akses);
-    console.log("Data ditemukan:", dataTerbaru);
-  
-    if (dataTerbaru?.alamat_link && dataTerbaru.alamat_link.startsWith('http')) {
-      window.open(dataTerbaru.alamat_link, '_blank');
-      return;
-    }
-  
-    const konfirmasi = confirm("Data belum dibuat. Apakah Anda ingin membuat file kertas kerja?");
+    const konfirmasi = confirm("Apakah Anda ingin membuka atau membuat file kertas kerja?");
     if (!konfirmasi) return;
   
     try {
@@ -231,8 +220,7 @@
       const json = await res.json();
   
       if (json.success && json.url) {
-        alert("Kertas kerja berhasil dibuat. File akan dibuka.");
-        window.open(json.url, '_blank'); // langsung buka file
+        window.open(json.url, '_blank');
       } else {
         alert("Gagal membuat file: " + (json.error || "Tidak diketahui"));
       }
