@@ -168,14 +168,18 @@
   
   async function ambilData() {
     const res = await fetch(CSV_URL);
-    const text = await res.text();
-    const rows = text.trim().split('\n').map(row => row.split(','));
-    const headers = rows[0];
-    return rows.slice(1).map(row => {
+    const teks = await res.text();
+    const baris = teks.trim().split('\n');
+    const kolom = baris[0].split(',');
+    const hasil = baris.slice(1).map(b => {
+      const nilai = b.split(',');
       const obj = {};
-      headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
+      kolom.forEach((k, i) => {
+        obj[k.trim()] = nilai[i]?.trim();
+      });
       return obj;
     });
+    return hasil;
   }
   
   async function cekKode() {
@@ -201,13 +205,15 @@
   }
   
   async function bukaLink() {
-    const raw = document.getElementById('openLink').getAttribute('data');
-    if (!raw) return;
-    let data = JSON.parse(raw);
+    const tombol = document.getElementById('openLink');
+    let data = JSON.parse(tombol.getAttribute('data'));
   
-    // Jika sudah ada link, langsung buka
-    if (data.alamat_link && data.alamat_link.startsWith('http')) {
-      window.open(data.alamat_link, '_blank');
+    // Ambil data terkini dari spreadsheet
+    const semuaData = await ambilData();
+    const dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
+  
+    if (dataTerbaru?.alamat_link && dataTerbaru.alamat_link.startsWith('http')) {
+      window.open(dataTerbaru.alamat_link, '_blank');
       return;
     }
   
@@ -229,18 +235,17 @@
       if (json.success && json.url) {
         alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
   
-        // Segarkan data dari spreadsheet setelah file dibuat
-        const refreshed = await ambilData();
-        const updated = refreshed.find(x => x.kode_akses === data.kode_akses);
-        if (updated) {
-          data = updated;
-          document.getElementById('openLink').setAttribute('data', JSON.stringify(data));
+        // Ambil ulang data dari spreadsheet untuk update alamat_link
+        const hasilRefresh = await ambilData();
+        const dataBaru = hasilRefresh.find(x => x.kode_akses === data.kode_akses);
+        if (dataBaru) {
+          tombol.setAttribute('data', JSON.stringify(dataBaru));
         }
       } else {
-        alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
+        alert("Gagal membuat file: " + (json.error || "Tidak diketahui"));
       }
     } catch (err) {
-      alert('Terjadi kesalahan: ' + err.message);
+      alert("Terjadi kesalahan: " + err.message);
     }
   }
   
