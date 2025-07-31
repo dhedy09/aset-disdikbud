@@ -1,177 +1,246 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DISDIKBUD - ASET</title>
+  <meta charset="UTF-8">
+  <title>Aplikasi Aset Disdikbud</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    :root {
+      --bg-light: #f4f6f8;
+      --bg-dark: #1e1e2f;
+      --card-light: #fff;
+      --card-dark: #2c2c3e;
+      --text-light: #2e2e2e;
+      --text-dark: #eaeaea;
+      --accent: #3246a8;
+      --accent-hover: #2a3c91;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f1f3f6;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      transition: background-color 0.4s, color 0.4s;
+    }
+
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #2c3e50;
+      background-color: var(--accent);
       color: white;
-      padding: 1rem 2rem;
-    }
-
-    .judul {
-      font-size: 1.5rem;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
       font-weight: bold;
+      position: relative;
     }
 
-    .akses {
-      font-size: 1rem;
+    #kodeLabel {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      background-color: rgba(255,255,255,0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    #toggleMode {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: white;
+      font-size: 18px;
     }
 
     main {
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      max-width: 500px;
+      margin: 60px auto;
+      background-color: var(--card-light);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: background-color 0.4s;
     }
 
-    .input-group {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
+    body.dark main {
+      background-color: var(--card-dark);
     }
 
     input[type="text"] {
-      padding: 0.5rem;
-      font-size: 1rem;
-      width: 200px;
-      border-radius: 4px;
+      width: 80%;
+      padding: 12px;
+      font-size: 16px;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background: #3498db;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: var(--accent);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
     button:hover {
-      background: #2980b9;
+      background-color: var(--accent-hover);
+      transform: translateY(-2px);
     }
 
-    .message {
-      margin-top: 1rem;
-      font-size: 1rem;
-      color: #333;
+    #result-box {
+      display: none;
+      margin-top: 30px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease-in-out;
     }
 
-    .confirm-box {
-      margin-top: 1rem;
+    #result-box.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    .confirm-box button {
-      margin: 0 0.5rem;
-      background-color: #2ecc71;
+    #school-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
     }
 
-    .confirm-box button.no {
-      background-color: #e74c3c;
+    #info-text {
+      margin: 10px 0 20px;
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      #kodeLabel {
+        position: static;
+        display: block;
+        margin-top: 10px;
+        transform: none;
+      }
     }
   </style>
 </head>
 <body>
+
   <header>
-    <div class="judul">Selamat Datang</div>
-    <div class="akses">Kode Akses: <span id="kodeAksesLabel">-</span></div>
+    <i class="fas fa-school" id="toggleMode" title="Ganti Mode"></i>
+    Selamat Datang di Aplikasi Aset Disdikbud
+    <div id="kodeLabel" style="display:none;"></div>
   </header>
 
   <main>
-    <div class="input-group">
-      <input type="text" id="kodeAkses" placeholder="Masukkan Kode Akses" />
-      <button onclick="handleInput()">Input Data</button>
+    <div id="login-box">
+      <h2><i class="fas fa-key"></i> Masukkan Kode Akses</h2>
+      <input type="text" id="kodeAkses" placeholder="Contoh: abc2">
+      <br>
+      <button onclick="cekKode()"><i class="fas fa-check"></i> Tampilkan</button>
     </div>
-    <div class="message" id="message"></div>
-    <div class="confirm-box" id="confirmBox" style="display: none;">
-      <p>Data belum dibuat. Apakah Anda ingin membuat file kertas kerja?</p>
-      <button class="yes" onclick="createFile()">Ya</button>
-      <button class="no" onclick="resetConfirm()">Tidak</button>
+
+    <div id="result-box">
+      <div id="school-name"></div>
+      <div id="info-text">Silahkan Klik Tombol di bawah ini</div>
+      <button id="openLink" onclick="bukaLink()"><i class="fas fa-pen"></i> Input Data</button>
     </div>
   </main>
 
+  <!-- Ganti seluruh script bukaLink() pada <script> -->
   <script>
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbwQi1WI__3-1CePTePIIvT55g5YASBlTDrCmttVyPK7FbYy2EB4XbqLovr3w_TRSi-sUA/exec";
-    let aksesData = [];
-
-    fetch("https://dhedy09.github.io/aset-disdikbud/kode_akses.csv")
-      .then(res => res.text())
-      .then(csv => {
-        const lines = csv.trim().split("\n").slice(1);
-        aksesData = lines.map(line => {
-          const [kode, nama, kecamatan, operator, link] = line.split(",");
-          return { kode, nama, kecamatan, operator, link };
-        });
-      });
-
-    function handleInput() {
-      const kode = document.getElementById("kodeAkses").value.trim();
-      document.getElementById("kodeAksesLabel").innerText = kode || "-";
-      const match = aksesData.find(row => row.kode === kode);
-
-      if (!match) {
-        showMessage("Kode akses tidak ditemukan.");
-        return;
-      }
-
-      if (match.link && match.link.startsWith("http")) {
-        window.open(match.link, "_blank");
-      } else {
-        document.getElementById("confirmBox").style.display = "block";
-      }
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwQi1WI__3-1CePTePIIvT55g5YASBlTDrCmttVyPK7FbYy2EB4XbqLovr3w_TRSi-sUA/exec';
+  
+  let dataSekolah = [];
+  
+  async function ambilData() {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const rows = text.trim().split('\n').map(row => row.split(','));
+    const headers = rows[0];
+    return rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h.trim()] = row[i]?.trim());
+      return obj;
+    });
+  }
+  
+  async function cekKode() {
+    const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
+    if (!kode) return alert("Silakan masukkan kode akses.");
+  
+    if (!dataSekolah.length) {
+      try { dataSekolah = await ambilData(); } 
+      catch (e) { alert('Gagal mengambil data: ' + e); return; }
     }
-
-    function createFile() {
-      const kode = document.getElementById("kodeAkses").value.trim();
-      const data = aksesData.find(r => r.kode === kode);
-      if (!data) return;
-
-      fetch(webAppUrl, {
-        method: "POST",
+  
+    const hasil = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
+    if (hasil) {
+      document.getElementById('school-name').innerText = hasil.nama_sekolah;
+      document.getElementById('openLink').setAttribute('data', JSON.stringify(hasil));
+      document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
+      document.getElementById('kodeLabel').style.display = 'inline-block';
+      document.getElementById('login-box').style.display = 'none';
+      document.getElementById('result-box').classList.add('show');
+    } else {
+      alert('Kode akses tidak ditemukan.');
+    }
+  }
+  
+  async function bukaLink() {
+    const raw = document.getElementById('openLink').getAttribute('data');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+  
+    if (data.alamat_link && data.alamat_link.startsWith('http')) {
+      window.open(data.alamat_link, '_blank');
+      return;
+    }
+  
+    const konfirmasi = confirm("Data belum dibuat. Apakah Anda ingin membuat file kertas kerja?");
+    if (!konfirmasi) return;
+  
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
         body: JSON.stringify({
-          kode_akses: data.kode,
-          nama_sekolah: data.nama,
+          kode_akses: data.kode_akses,
+          nama_sekolah: data.nama_sekolah,
           kecamatan: data.kecamatan,
           operator: data.operator
-        }),
-        headers: { "Content-Type": "application/json" }
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) {
-          showMessage("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
-        } else {
-          showMessage("Gagal membuat file: " + res.error);
-        }
-      })
-      .catch(() => {
-        showMessage("Terjadi kesalahan jaringan.");
+        })
       });
-
-      document.getElementById("confirmBox").style.display = "none";
+  
+      const json = await res.json();
+      if (json.success && json.url) {
+        alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
+        // Refresh data agar alamat_link baru terbaca saat klik ulang
+        dataSekolah = await ambilData();
+      } else {
+        alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
+      }
+    } catch (err) {
+      alert('Terjadi kesalahan: ' + err.message);
     }
-
-    function resetConfirm() {
-      document.getElementById("confirmBox").style.display = "none";
-    }
-
-    function showMessage(msg) {
-      document.getElementById("message").innerText = msg;
-    }
+  }
+  
+  document.getElementById('toggleMode').onclick = () => {
+    document.body.classList.toggle('dark');
+  };
   </script>
+
 </body>
 </html>
