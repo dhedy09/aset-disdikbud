@@ -156,18 +156,18 @@
 
     <div id="result-box">
       <div id="school-name"></div>
-      <div id="info-text">Silakan klik tombol di bawah ini untuk membuat file</div>
-      <button id="openLink" onclick="buatFile()"><i class="fas fa-pen"></i> Input Data</button>
+      <div id="info-text">Silahkan Klik Tombol di bawah ini</div>
+      <button id="openLink" onclick="bukaLink()"><i class="fas fa-pen"></i> Input Data</button>
     </div>
   </main>
 
   <script>
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
     const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyN_uEIh80qZPaF7gh1MXoF4e6JHIMWSfaAz8bzw1kKNyytAyTVShvBYEsEZv1k_loQ/exec';
-
+  
     let dataSekolah = [];
-    let currentKode = '';
-
+    let dataTerpilih = null;
+  
     async function ambilData() {
       const res = await fetch(CSV_URL);
       const text = await res.text();
@@ -179,18 +179,19 @@
         return obj;
       });
     }
-
+  
     async function cekKode() {
       const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
-      currentKode = kode;
       if (!dataSekolah.length) {
         try { dataSekolah = await ambilData(); } 
         catch (e) { alert('Gagal mengambil data: ' + e); return; }
       }
-
+  
       const hasil = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
       if (hasil) {
+        dataTerpilih = hasil;
         document.getElementById('school-name').innerText = hasil.nama_sekolah;
+        document.getElementById('openLink').setAttribute('data-link', hasil.alamat_link || '');
         document.getElementById('kodeLabel').innerText = 'Kode Akses: ' + kode.toUpperCase();
         document.getElementById('kodeLabel').style.display = 'inline-block';
         document.getElementById('login-box').style.display = 'none';
@@ -200,31 +201,42 @@
         alert('Kode akses tidak ditemukan.');
       }
     }
-
-    async function buatFile() {
-      if (!currentKode) return alert("Kode akses belum dimasukkan.");
-
-      try {
-        const res = await fetch(WEBAPP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ kode_akses: currentKode })
-        });
-        const result = await res.json();
-        if (result.success && result.link) {
-          window.open(result.link, '_blank');
-        } else {
-          alert('Gagal membuat file: ' + (result.error || 'Tidak diketahui'));
+  
+    async function bukaLink() {
+      const link = document.getElementById('openLink').getAttribute('data-link');
+  
+      if (link) {
+        window.open(link, '_blank');
+      } else if (dataTerpilih) {
+        const kirim = {
+          kode_akses: dataTerpilih.kode_akses,
+          nama_sekolah: dataTerpilih.nama_sekolah,
+          kecamatan: dataTerpilih.kecamatan,
+          operator: dataTerpilih.operator
+        };
+  
+        try {
+          const res = await fetch(WEBAPP_URL, {
+            method: 'POST',
+            body: JSON.stringify(kirim),
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const hasil = await res.json();
+          if (hasil.success && hasil.url) {
+            window.open(hasil.url, '_blank');
+          } else {
+            alert('Gagal membuat file baru: ' + hasil.error);
+          }
+        } catch (e) {
+          alert('Terjadi kesalahan: ' + e);
         }
-      } catch (e) {
-        alert('Terjadi kesalahan koneksi: ' + e.message);
       }
     }
-
+  
     document.getElementById('toggleMode').onclick = () => {
       document.body.classList.toggle('dark');
     };
   </script>
-
+  
 </body>
 </html>
