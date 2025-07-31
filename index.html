@@ -208,7 +208,7 @@
     const tombol = document.getElementById('openLink');
     let data = JSON.parse(tombol.getAttribute('data'));
   
-    // Ambil data terkini dari spreadsheet
+    // Ambil data terbaru dari CSV
     const semuaData = await ambilData();
     const dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
   
@@ -232,17 +232,13 @@
       });
   
       const json = await res.json();
+  
       if (json.success && json.url) {
         alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
   
-        // Tambahkan delay agar Google Sheets sempat update CSV
-        await new Promise(resolve => setTimeout(resolve, 5000)); // 5 detik
-  
-        const hasilRefresh = await ambilData();
-        const dataBaru = hasilRefresh.find(x => x.kode_akses === data.kode_akses);
-        if (dataBaru) {
-          tombol.setAttribute('data', JSON.stringify(dataBaru));
-        }
+        // Simpan link ke tombol agar bisa dipakai saat klik ulang
+        dataTerbaru.alamat_link = json.url;
+        tombol.setAttribute('data', JSON.stringify(dataTerbaru));
       } else {
         alert("Gagal membuat file: " + (json.error || "Tidak diketahui"));
       }
