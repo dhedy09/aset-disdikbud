@@ -144,10 +144,6 @@
     <div id="kodeLabel" style="display:none;"></div>
   </header>
 
-  <div id="loading" style="display:none;position:fixed;top:0;left:0;right:0;padding:10px;background:#222;color:white;text-align:center;z-index:9999;">
-  Mohon tunggu, sedang memuat data...
-  </div>
-
   <main>
     <div id="login-box">
       <h2><i class="fas fa-key"></i> Masukkan Kode Akses</h2>
@@ -160,6 +156,13 @@
       <div id="school-name"></div>
       <div id="info-text">Silahkan Klik Tombol di bawah ini</div>
       <button id="openLink" onclick="bukaLink()"><i class="fas fa-pen"></i> Input Data</button>
+    </div>
+
+    <div id="loading-bar" style="display:none; margin-top: 15px;">
+      <div style="height: 20px; width: 100%; background: #ccc; border-radius: 10px; overflow: hidden;">
+        <div id="progress-fill" style="width: 0%; height: 100%; background: #4caf50; transition: width 0.4s;"></div>
+      </div>
+      <p style="text-align: center; margin: 5px 0 0;">Sedang membuat file, mohon tunggu...</p>
     </div>
   </main>
 
@@ -204,22 +207,18 @@
   }
   
   async function bukaLink() {
-    const loading = document.getElementById('loading');
-    loading.style.display = 'block'; // Tampilkan notifikasi
+    const raw = document.getElementById('openLink').getAttribute('data');
+    if (!raw) return;
+    const data = JSON.parse(raw);
   
-    try {
-      const raw = document.getElementById('openLink').getAttribute('data');
-      if (!raw) {
-        loading.style.display = 'none';
-        return;
-      }
+    if (data.alamat_link && data.alamat_link.startsWith('http')) {
+      window.open(data.alamat_link, '_blank');
+    } else {
+      try {
+        // Tampilkan progress bar
+        document.getElementById('loading-bar').style.display = 'block';
+        document.getElementById('progress-fill').style.width = '30%';
   
-      const data = JSON.parse(raw);
-  
-      if (data.alamat_link && data.alamat_link.startsWith('http')) {
-        loading.style.display = 'none';
-        window.open(data.alamat_link, '_blank');
-      } else {
         const res = await fetch(WEB_APP_URL, {
           method: 'POST',
           body: JSON.stringify({
@@ -229,19 +228,26 @@
             operator: data.operator
           })
         });
+  
+        document.getElementById('progress-fill').style.width = '70%';
+  
         const json = await res.json();
   
-        loading.style.display = 'none';
-  
         if (json.success && json.url) {
-          window.open(json.url, '_blank');
+          document.getElementById('progress-fill').style.width = '100%';
+          setTimeout(() => {
+            document.getElementById('loading-bar').style.display = 'none';
+            document.getElementById('progress-fill').style.width = '0%';
+            window.open(json.url, '_blank');
+          }, 500);
         } else {
+          document.getElementById('loading-bar').style.display = 'none';
           alert('Gagal membuat file: ' + (json.error || 'Tidak diketahui.'));
         }
+      } catch (err) {
+        document.getElementById('loading-bar').style.display = 'none';
+        alert('Terjadi kesalahan: ' + err.message);
       }
-    } catch (err) {
-      loading.style.display = 'none';
-      alert('Terjadi kesalahan: ' + err.message);
     }
   }
   
