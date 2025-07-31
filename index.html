@@ -24,37 +24,43 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-md bg-gray-800 rounded-2xl p-6 shadow-lg fade-in">
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-xl font-bold">Selamat Datang di Aplikasi Aset Disdikbud</h1>
-      <span id="aksesDisplay" class="text-sm text-gray-400"></span>
-    </div>
+<body class="min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md bg-gray-800 rounded-2xl p-6 shadow-lg fade-in relative">
 
+    <!-- Kode Akses di kanan atas -->
+    <div class="absolute top-4 right-6 text-sm text-gray-400" id="aksesDisplay"></div>
+
+    <!-- Header -->
+    <h1 class="text-xl font-bold text-center mb-6">Selamat Datang di Aplikasi Aset Disdikbud</h1>
+
+    <!-- Form Login -->
     <div id="loginSection">
       <label for="kodeInput" class="block mb-2">Masukkan Kode Akses:</label>
-      <input id="kodeInput" type="text" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none" />
+      <input id="kodeInput" type="text" placeholder="Contoh: abc123" class="w-full p-2 rounded bg-gray-700 text-white focus:outline-none" />
       <button onclick="cekKode()" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
         <i class="fas fa-sign-in-alt mr-2"></i>Masuk
       </button>
       <p id="pesan" class="text-red-400 text-sm mt-2"></p>
     </div>
 
+    <!-- Data Section -->
     <div id="dataSection" class="hidden">
       <div class="text-center">
         <h2 id="namaSekolah" class="text-lg font-semibold mb-2"></h2>
-        <p class="mb-4">Silahkan Klik Tombol di bawah ini</p>
+        <p class="mb-4">Silakan klik tombol di bawah ini untuk memproses data Anda.</p>
         <button onclick="kirimData()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
           <i class="fas fa-file-upload mr-2"></i>Input Data
         </button>
-        <p id="statusKirim" class="text-sm text-green-400 mt-3"></p>
+        <p id="statusKirim" class="text-sm text-green-400 mt-4"></p>
       </div>
     </div>
+
   </div>
 
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
     const webAppURL = 'https://script.google.com/macros/s/AKfycbyN_uEIh80qZPaF7gh1MXoF4e6JHIMWSfaAz8bzw1kKNyytAyTVShvBYEsEZv1k_loQ/exec';
+
     let dataAkses = [];
     let dataTerpilih = null;
 
@@ -63,8 +69,9 @@
       const text = await res.text();
       const rows = text.split('\n').map(r => r.split(','));
       const headers = rows[0];
-      const result = rows.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h.trim(), row[i]?.trim()])));
-      return result;
+      return rows.slice(1).map(row =>
+        Object.fromEntries(headers.map((h, i) => [h.trim(), row[i]?.trim()]))
+      );
     }
 
     async function cekKode() {
@@ -80,7 +87,7 @@
         dataTerpilih = ditemukan;
         document.getElementById('loginSection').classList.add('hidden');
         document.getElementById('dataSection').classList.remove('hidden');
-        document.getElementById('namaSekolah').textContent = ditemukan.nama_sekolah;
+        document.getElementById('namaSekolah').textContent = `${ditemukan.nomor}. ${ditemukan.nama_sekolah.toUpperCase()} KEC.${ditemukan.kecamatan.toUpperCase()}`;
         aksesDisplay.textContent = kode;
       } else {
         pesan.textContent = 'Kode akses tidak valid.';
@@ -94,7 +101,10 @@
 
       const res = await fetch(webAppURL, {
         method: 'POST',
-        body: new URLSearchParams({
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           kode_akses: dataTerpilih.kode_akses,
           nama_sekolah: dataTerpilih.nama_sekolah,
           kecamatan: dataTerpilih.kecamatan,
@@ -102,8 +112,16 @@
         })
       });
 
-      const hasil = await res.text();
-      status.textContent = hasil;
+      try {
+        const hasil = await res.json();
+        if (hasil.success) {
+          status.innerHTML = `✅ Berhasil: <a href="${hasil.link}" target="_blank" class="underline text-blue-400">Lihat File</a>`;
+        } else {
+          status.textContent = "❌ Gagal: " + hasil.error;
+        }
+      } catch (e) {
+        status.textContent = "❌ Gagal memproses respons dari server.";
+      }
     }
   </script>
 </body>
