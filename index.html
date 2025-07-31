@@ -206,11 +206,13 @@
   
   async function bukaLink() {
     const tombol = document.getElementById('openLink');
-    let data = JSON.parse(tombol.getAttribute('data'));
+    const data = JSON.parse(tombol.getAttribute('data'));
   
-    // Ambil data terbaru dari CSV
     const semuaData = await ambilData();
     const dataTerbaru = semuaData.find(x => x.kode_akses === data.kode_akses);
+  
+    console.log("Kode akses:", data.kode_akses);
+    console.log("Data ditemukan:", dataTerbaru);
   
     if (dataTerbaru?.alamat_link && dataTerbaru.alamat_link.startsWith('http')) {
       window.open(dataTerbaru.alamat_link, '_blank');
@@ -223,22 +225,14 @@
     try {
       const res = await fetch(WEB_APP_URL, {
         method: 'POST',
-        body: JSON.stringify({
-          kode_akses: data.kode_akses,
-          nama_sekolah: data.nama_sekolah,
-          kecamatan: data.kecamatan,
-          operator: data.operator
-        })
+        body: JSON.stringify(data)
       });
   
       const json = await res.json();
   
       if (json.success && json.url) {
-        alert("Kertas kerja berhasil dibuat. Silakan klik ulang tombol Input Data.");
-  
-        // Simpan link ke tombol agar bisa dipakai saat klik ulang
-        dataTerbaru.alamat_link = json.url;
-        tombol.setAttribute('data', JSON.stringify(dataTerbaru));
+        alert("Kertas kerja berhasil dibuat. File akan dibuka.");
+        window.open(json.url, '_blank'); // langsung buka file
       } else {
         alert("Gagal membuat file: " + (json.error || "Tidak diketahui"));
       }
