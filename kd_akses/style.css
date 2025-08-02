@@ -214,7 +214,10 @@
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;  /* <- tengah horizontal */
+    text-align: center;        /* <- untuk berjaga-jaga jika pakai inline text */
     gap: 6px;
+    width: 100%;               /* <- opsional, agar tombol selebar kontainer */
   }
 
   button.reset-btn:hover {
@@ -243,6 +246,7 @@
     margin-top: 8px;
   }
 
+  @media (max-width: 600px) {
   .reset-btn {
     width: 100%;
     font-size: 14px;
