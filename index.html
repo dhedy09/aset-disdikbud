@@ -305,6 +305,17 @@
     window.open('cari_kode_akses.html', '_blank');
   };
 
+    document.getElementById('adminBtn').onclick = () => {
+    window.open('cari_kode_akses.html', '_blank');
+  };
+
+  // ⬇️ Tambahkan di sini
+  window.onload = () => {
+    const kode = sessionStorage.getItem('kode_akses');
+    if (kode === 'admin889') {
+      document.getElementById('adminBtn').style.display = 'inline-block';
+    }
+  };
 
   document.getElementById('kodeAkses').focus();
   
