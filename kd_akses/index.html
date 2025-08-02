@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kode Akses Sekolah</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    padding: 20px;
+    margin: 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+
+  input[type="text"], select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+
+  .school-name {
+    background-color: white;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .school-name:hover {
+    background-color: #eef3ff;
+    transform: translateX(4px);
+  }
+
+  .details {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border-left: 4px solid #3b82f6;
+  }
+
+  .details strong {
+    display: inline-block;
+    width: 120px;
+    color: #555;
+  }
+
+  .lanjut-btn {
+    margin-top: 12px;
+    padding: 10px 16px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .lanjut-btn:hover {
+    background-color: #059669;
+  }
+
+  .copy-btn {
+    margin-left: 10px;
+    padding: 4px 8px;
+    font-size: 13px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .copy-btn:hover {
+    background-color: #2563eb;
+  }
+
+  #toast-container {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .toast {
+    background-color: #323232;
+    color: white;
+    padding: 12px 16px;
+    margin-top: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    animation: slideIn 0.3s ease forwards, fadeOut 0.5s ease 2.5s forwards;
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    to   { opacity: 0; transform: translateY(20px); }
+  }
+
+  @media (max-width: 600px) {
+    body {
+      padding: 16px;
+    }
+
+    h2 {
+      font-size: 18px;
+      text-align: center;
+    }
+
+    input[type="text"], select {
+      font-size: 15px;
+      padding: 10px;
+    }
+
+    .school-name {
+      font-size: 15px;
+      padding: 10px 14px;
+    }
+
+    .details {
+      font-size: 14px;
+      padding: 14px;
+    }
+
+    .details strong {
+      width: 100px;
+    }
+
+    .lanjut-btn {
+      width: 100%;
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    .copy-btn {
+      padding: 4px 10px;
+      font-size: 13px;
+    }
+
+    #toast-container {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 300px;
+    }
+
+    .toast {
+      font-size: 14px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+
+    .school-name:hover {
+      transform: none;
+    }
+  }
+
+  .highlight {
+    background-color: yellow;
+    font-weight: bold;
+  }
+
+  select {
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 16px;
+    background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  select:focus {
+    border-color: #3b82f6;
+    outline: none;
+  }
+
+  button.reset-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  button.reset-btn:hover {
+    background-color: #dc2626;
+  }
+
+  .export-btn {
+    padding: 10px 16px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  .export-btn:hover {
+    background-color: #1d4ed8;
+  }
+
+  </style>
+</head>
+<body>
+  <h2> <center>DAFTAR KODE AKSES SEKOLAH</center></h2>
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+    <select id="filterKecamatan">
+      <option value="">Semua Kecamatan</option>
+      <!-- opsi ditambahkan lewat JS -->
+    </select>
+    <button id="resetBtn" class="reset-btn">🧹 Reset Filter</button>
+  </div>
+
+  <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+    <button id="exportExcelBtn" class="export-btn">⬇️ Export Excel</button>
+    <button id="exportPdfBtn" class="export-btn">📄 Export PDF</button>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <input type="text" id="searchInput" placeholder="Cari nama sekolah..." style="width: 100%; padding: 8px; margin-bottom: 20px;">
+  <div id="schoolList"></div>
+
+  <script>
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
+  let allData = [];
+
+  Papa.parse(CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      allData = results.data.map(row => ({
+        kode_akses: row.kode_akses || '',
+        nama_sekolah: row.nama_sekolah || '',
+        kecamatan: row.kecamatan || '',
+        operator: row.operator || '',
+        alamat_link: row.alamat_link || ''
+      }));
+      initDropdown(allData);         // ✅ hanya sekali saat awal
+      displaySchools(allData);
+    }
+  });
+
+  function initDropdown(data) {
+    const filter = document.getElementById('filterKecamatan');
+    const kecamatanSet = new Set(data.map(item => item.kecamatan));
+    filter.innerHTML = '<option value="">-- Semua Kecamatan --</option>';
+    Array.from(kecamatanSet).sort().forEach(kec => {
+      const option = document.createElement('option');
+      option.value = kec;
+      option.textContent = kec;
+      filter.appendChild(option);
+    });
+  }
+
+  function displaySchools(data, keyword = '') {
+    const list = document.getElementById('schoolList');
+    list.innerHTML = '';
+
+    data.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'school-name';
+
+      if (keyword) {
+        const regex = new RegExp(`(${keyword})`, 'gi');
+        div.innerHTML = item.nama_sekolah.replace(regex, `<span class="highlight">$1</span>`);
+      } else {
+        div.textContent = item.nama_sekolah;
+      }
+
+      div.addEventListener('click', () => showDetails(item, div));
+      list.appendChild(div);
+    });
+  }
+
+  function showDetails(item, container) {
+    const oldDetails = document.querySelectorAll('.details');
+    oldDetails.forEach(el => el.remove());
+
+    const detailDiv = document.createElement('div');
+    detailDiv.className = 'details';
+    detailDiv.innerHTML = `
+      <strong>Kode Akses:</strong> ${item.kode_akses}
+      <button class="copy-btn" onclick="copyKodeAkses('${item.kode_akses}')">Salin</button><br>
+      <strong>Kecamatan:</strong> ${item.kecamatan}<br>
+      <strong>Operator:</strong> ${item.operator}<br><br>
+      ${item.alamat_link
+        ? `<div>
+            File kertas kerja sudah ada, silakan klik tombol lanjutkan di bawah ini.<br><br>
+            <a href="${item.alamat_link}" target="_blank" class="lanjut-link">
+              <button class="lanjut-btn">Lanjutkan</button>
+            </a>
+          </div>`
+        : `<div>File kertas kerja belum ada, silakan buat dulu.</div>`}
+    `;
+    container.insertAdjacentElement('afterend', detailDiv);
+  }
+
+  document.getElementById('filterKecamatan').addEventListener('change', function () {
+    const kec = this.value;
+    const search = document.getElementById('searchInput');
+
+    if (kec) {
+      search.placeholder = `Cari sekolah di kecamatan "${kec}"...`;
+    } else {
+      search.placeholder = 'Cari nama sekolah...';
+    }
+
+    filterAndSearch();
+  });
+
+  document.getElementById('searchInput').addEventListener('input', function () {
+    filterAndSearch();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    document.getElementById('searchInput').placeholder = 'Cari nama sekolah...';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterKecamatan').value = '';
+    displaySchools(allData);
+  });
+
+  document.getElementById('exportExcelBtn').addEventListener('click', function () {
+    const dataToExport = getDisplayedData();
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Daftar Sekolah");
+    XLSX.writeFile(wb, "kode akses.xlsx");
+  });
+
+    document.getElementById('exportPdfBtn').addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont("helvetica");
+
+      const dataToExport = getDisplayedData();
+      if (dataToExport.length === 0) {
+        showToast("Tidak ada data untuk diekspor.");
+        return;
+      }
+
+      // Siapkan header + body untuk table
+      const headers = [["No", "Nama Sekolah", "Kode Akses", "Kecamatan", "Operator"]];
+      const body = dataToExport.map((item, index) => [
+        index + 1,
+        item.nama_sekolah,
+        item.kode_akses,
+        item.kecamatan,
+        item.operator
+      ]);
+
+      doc.autoTable({
+        head: headers,
+        body: body,
+        startY: 20,
+        theme: 'striped',
+        styles: {
+          font: "helvetica",
+          fontSize: 10,
+          cellPadding: 4,
+        },
+        headStyles: {
+          fillColor: [59, 130, 246], // biru
+          textColor: 255,
+          halign: 'center'
+        },
+        columnStyles: {
+          0: { halign: 'center', cellWidth: 20 }, // No
+          1: { cellWidth: 60 }, // Nama sekolah
+          2: { cellWidth: 30 }, // Kode akses
+          3: { cellWidth: 35 }, // Kecamatan
+          4: { cellWidth: 40 }  // Operator
+        }
+      });
+
+      doc.save("daftar-sekolah.pdf");
+    });
+
+    function getDisplayedData() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const kecamatan = document.getElementById('filterKecamatan').value;
+
+      return allData.filter(item => {
+        const matchKeyword = item.nama_sekolah.toLowerCase().includes(keyword);
+        const matchKecamatan = kecamatan ? item.kecamatan === kecamatan : true;
+        return matchKeyword && matchKecamatan;
+      });
+    }
+
+
+  // Fungsi bantu: ambil data hasil filter pencarian saat ini
+  function getDisplayedData() {
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    const kecamatan = document.getElementById('filterKecamatan').value;
+
+    return allData.filter(item => {
+      const matchKeyword = item.nama_sekolah.toLowerCase().includes(keyword);
+      const matchKecamatan = kecamatan ? item.kecamatan === kecamatan : true;
+      return matchKeyword && matchKecamatan;
+    });
+  }
+
+
+  function copyKodeAkses(kode) {
+    navigator.clipboard.writeText(kode).then(() => {
+      showToast(`Kode akses "${kode}" berhasil disalin.`);
+    }).catch(err => {
+      showToast("Gagal menyalin kode akses.");
+      console.error(err);
+    });
+  }
+
+  function showToast(message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+
+  function filterAndSearch() {
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    const kecamatan = document.getElementById('filterKecamatan').value;
+
+    const filtered = allData.filter(item => {
+      const matchKeyword = item.nama_sekolah.toLowerCase().includes(keyword);
+      const matchKecamatan = kecamatan ? item.kecamatan === kecamatan : true;
+      return matchKeyword && matchKecamatan;
+    });
+
+    displaySchools(filtered, keyword);
+  }
+  </script>
+</body>
+</html>
