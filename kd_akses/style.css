@@ -232,3 +232,41 @@
   .export-btn:hover {
     background-color: #1d4ed8;
   }
+
+
+  @media (max-width: 600px) {
+  .export-btn {
+    width: 100%;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .reset-btn {
+    width: 100%;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  #searchInput {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .school-name {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .details {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  div[style*="display: flex; gap: 10px;"] {
+    flex-direction: column !important;
+  }
+
+  div[style*="display: flex; flex-direction: column;"] {
+    width: 100%;
+  }
+}
