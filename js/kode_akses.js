@@ -1,14 +1,9 @@
-// 🛡️ Cek login admin
+// Auth
 if (sessionStorage.getItem('kode_akses') !== ADMIN_KODE) {
   window.location.href = '../index.html';
 }
 
-// ✅ Auto hapus session saat browser ditutup
-window.addEventListener("beforeunload", function () {
-  sessionStorage.removeItem("kode_akses");
-});
-
-// 🔗 Data dari Google Sheets
+// Data fetch
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
 let allData = [];
 
@@ -62,7 +57,8 @@ function displaySchools(data, keyword = '') {
 }
 
 function showDetails(item, container) {
-  document.querySelectorAll('.details').forEach(el => el.remove());
+  const oldDetails = document.querySelectorAll('.details');
+  oldDetails.forEach(el => el.remove());
 
   const detailDiv = document.createElement('div');
   detailDiv.className = 'details';
@@ -71,46 +67,33 @@ function showDetails(item, container) {
     <button class="copy-btn" onclick="copyKodeAkses('${item.kode_akses}')">Salin</button><br>
     <strong>Kecamatan:</strong> ${item.kecamatan}<br>
     <strong>Operator:</strong> ${item.operator}<br><br>
-    ${
-      item.alamat_link
-        ? `<div>
-             File kertas kerja sudah ada. Klik tombol lanjutkan di bawah.<br><br>
-             <a href="${item.alamat_link}" target="_blank" class="lanjut-link">
-               <button class="lanjut-btn">Lanjutkan</button>
-             </a>
-           </div>`
-        : `<div>File kertas kerja belum ada, silakan buat dulu.</div>`
-    }
+    ${item.alamat_link
+      ? `<div>
+          File kertas kerja sudah ada, silakan klik tombol lanjutkan di bawah ini.<br><br>
+          <a href="${item.alamat_link}" target="_blank" class="lanjut-link">
+            <button class="lanjut-btn">Lanjutkan</button>
+          </a>
+        </div>`
+      : `<div>File kertas kerja belum ada, silakan buat dulu.</div>`}
   `;
   container.insertAdjacentElement('afterend', detailDiv);
 }
 
-document.getElementById('filterKecamatan').addEventListener('change', function () {
-  const kec = this.value;
-  const search = document.getElementById('searchInput');
-
-  search.placeholder = kec
-    ? `Cari sekolah di kecamatan "${kec}"...`
-    : 'Cari nama sekolah...';
-
-  filterAndSearch();
-});
-
+document.getElementById('filterKecamatan').addEventListener('change', filterAndSearch);
 document.getElementById('searchInput').addEventListener('input', filterAndSearch);
-
-document.getElementById('resetBtn').addEventListener('click', function () {
+document.getElementById('resetBtn').addEventListener('click', () => {
   document.getElementById('searchInput').placeholder = 'Cari nama sekolah...';
   document.getElementById('searchInput').value = '';
   document.getElementById('filterKecamatan').value = '';
   displaySchools(allData);
 });
 
-document.getElementById('exportExcelBtn').addEventListener('click', function () {
+document.getElementById('exportExcelBtn').addEventListener('click', () => {
   const dataToExport = getDisplayedData();
   const ws = XLSX.utils.json_to_sheet(dataToExport);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Daftar Sekolah");
-  XLSX.writeFile(wb, "kode_akses.xlsx");
+  XLSX.writeFile(wb, "kode akses.xlsx");
 });
 
 document.getElementById('exportPdfBtn').addEventListener('click', () => {
@@ -138,8 +121,16 @@ document.getElementById('exportPdfBtn').addEventListener('click', () => {
     body: body,
     startY: 20,
     theme: 'striped',
-    styles: { font: "helvetica", fontSize: 10, cellPadding: 4 },
-    headStyles: { fillColor: [59, 130, 246], textColor: 255, halign: 'center' },
+    styles: {
+      font: "helvetica",
+      fontSize: 10,
+      cellPadding: 4,
+    },
+    headStyles: {
+      fillColor: [59, 130, 246],
+      textColor: 255,
+      halign: 'center'
+    },
     columnStyles: {
       0: { halign: 'center', cellWidth: 20 },
       1: { cellWidth: 60 },
@@ -179,7 +170,9 @@ function showToast(message) {
   toast.textContent = message;
   container.appendChild(toast);
 
-  setTimeout(() => toast.remove(), 3000);
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
 }
 
 function filterAndSearch() {
