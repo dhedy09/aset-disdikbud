@@ -19,11 +19,11 @@ async function cekKode() {
   const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
   if (!kode) return alert("Silakan masukkan kode akses.");
 
-  if (kode === "admin889") {
+  if (kode === ADMIN_KODE) {
     const adminBtn = document.getElementById('adminBtn');
     adminBtn.style.display = 'inline-block';
     adminBtn.onclick = () => window.open('kd_akses', '_blank');
-    sessionStorage.setItem('kode_akses', 'admin889');
+    sessionStorage.setItem('kode_akses', ADMIN_KODE);
     return;
   }
 
@@ -100,7 +100,7 @@ document.getElementById('adminBtn').onclick = () => {
 
 window.onload = () => {
   const kode = sessionStorage.getItem('kode_akses');
-  if (kode === 'admin889') {
+  if (kode === ADMIN_KODE) {
     document.getElementById('adminBtn').style.display = 'inline-block';
   }
   document.getElementById('kodeAkses').focus();

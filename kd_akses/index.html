@@ -271,7 +271,7 @@
       <!-- 🛡️ Tambahkan ini DI SINI -->
  <!-- <script>
     // Cek apakah sudah login sebagai admin
-    if (sessionStorage.getItem('kode_akses') !== 'admin889') {
+    if (sessionStorage.getItem('kode_akses') !== ADMIN_KODE) {
       window.location.href = '../index.html';
     }
 
@@ -281,10 +281,11 @@
     });
   </script> -->
 
+  <script src="../js/config.js"></script>  
   <!-- 🛡️ Tambahkan ini DI SINI -->
   <script>
     // Cek apakah sudah login sebagai admin
-    if (sessionStorage.getItem('kode_akses') !== 'admin889') {
+    if (sessionStorage.getItem('kode_akses') !== ADMIN_KODE) {
       window.location.href = '../index.html';
     }
   </script>
@@ -506,5 +507,6 @@
     displaySchools(filtered, keyword);
   }
   </script>
+
 </body>
 </html>
