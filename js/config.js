@@ -1,2 +1,2 @@
 // js/config.js
-const ADMIN_KODE = "admin889";
+const ADMIN_KODE = "azrina";
