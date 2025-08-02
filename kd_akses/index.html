@@ -249,14 +249,6 @@
 </head>
 <body>
 
-    <!-- 🛡️ Tambahkan ini DI SINI -->
-  <script>
-    const kodeAdmin = localStorage.getItem('kode_akses');
-    if (kodeAdmin !== 'admin889') {
-      window.location.href = '../index.html';
-    }
-  </script>
-  
   <h2> <center>DAFTAR KODE AKSES SEKOLAH</center></h2>
   <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
     <select id="filterKecamatan">
@@ -275,6 +267,14 @@
 
   <input type="text" id="searchInput" placeholder="Cari nama sekolah..." style="width: 100%; padding: 8px; margin-bottom: 20px;">
   <div id="schoolList"></div>
+
+      <!-- 🛡️ Tambahkan ini DI SINI -->
+  <script>
+    const kodeAdmin = localStorage.getItem('kode_akses');
+    if (kodeAdmin !== 'admin889') {
+      window.location.href = '../index.html';
+    }
+  </script>
 
   <script>
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT-ZVKkBynVCn0tngHrVdzDzFd7oauVIINSFCIrgC1SyHj49ru4TGX9O2ciOu9aLzD4KgkB1kA3npvL/pub?output=csv';
