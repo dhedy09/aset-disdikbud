@@ -269,7 +269,7 @@
   <div id="schoolList"></div>
 
       <!-- 🛡️ Tambahkan ini DI SINI -->
-  <script>
+ <!-- <script>
     // Cek apakah sudah login sebagai admin
     if (sessionStorage.getItem('kode_akses') !== 'admin889') {
       window.location.href = '../index.html';
@@ -279,7 +279,16 @@
     window.addEventListener("beforeunload", function () {
       sessionStorage.removeItem("kode_akses");
     });
+  </script> -->
+
+  <!-- 🛡️ Tambahkan ini DI SINI -->
+  <script>
+    // Cek apakah sudah login sebagai admin
+    if (sessionStorage.getItem('kode_akses') !== 'admin889') {
+      window.location.href = '../index.html';
+    }
   </script>
+
 
 
   <script>
