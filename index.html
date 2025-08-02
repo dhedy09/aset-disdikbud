@@ -179,13 +179,13 @@
   <main>
     <div id="login-box">
       <h2><i class="fas fa-key"></i> Masukkan Kode Akses</h2>
-      <div style="position: relative; display: inline-block; width: 80%;">
-        <input type="password" id="kodeAkses" placeholder="Contoh: abc2" style="width: 100%; padding-right: 40px;">
+      <div style="position: relative; width: 80%; margin: 0 auto;">
+        <input type="password" id="kodeAkses" placeholder="Contoh: abc2" style="width: 100%; padding: 12px; padding-right: 40px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px;">
         <i class="fas fa-eye" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #888;"></i>
       </div>
-      <br>
-      <button onclick="cekKode()"><i class="fas fa-check"></i> Tampilkan</button>
+      <button onclick="cekKode()" style="margin-top: 20px;"><i class="fas fa-check"></i> Tampilkan</button>
     </div>
+
 
     <div id="result-box">
       <div id="school-name"></div>
