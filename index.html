@@ -225,8 +225,12 @@
       const adminBtn = document.getElementById('adminBtn');
       adminBtn.style.display = 'inline-block';
       adminBtn.onclick = () => window.open('kd_akses', '_blank');
+
+      // ✅ Gunakan sessionStorage agar otomatis terhapus saat browser/tab ditutup
+      sessionStorage.setItem('kode_akses', 'admin889');
       return;
     }
+
 
     // lanjut ke pengecekan kode akses sekolah seperti biasa
     if (!dataSekolah.length) {
