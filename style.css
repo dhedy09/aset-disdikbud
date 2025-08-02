@@ -185,25 +185,35 @@ button:hover {
     transform: none;
   }
 }
+/* ini style kd_akses*/
 
-
-/* ================= KODE AKSES STYLE ================ */
-
-.kd-body {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+.akses-page {
   font-family: 'Segoe UI', sans-serif;
   background-color: #f5f7fa;
   color: #333;
+  padding: 20px;
+  margin: 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.kd-body h2 {
-  font-size: 24px;
+.akses-page h2 {
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
-.school-name {
+.akses-page input[type="text"],
+.akses-page select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.akses-page .school-name {
   background-color: white;
   padding: 12px 16px;
   margin-bottom: 10px;
@@ -212,12 +222,13 @@ button:hover {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.school-name:hover {
+
+.akses-page .school-name:hover {
   background-color: #eef3ff;
   transform: translateX(4px);
 }
 
-.details {
+.akses-page .details {
   background-color: #ffffff;
   border-radius: 10px;
   padding: 16px;
@@ -226,13 +237,14 @@ button:hover {
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   border-left: 4px solid #3b82f6;
 }
-.details strong {
+
+.akses-page .details strong {
   display: inline-block;
   width: 120px;
   color: #555;
 }
 
-.lanjut-btn {
+.akses-page .lanjut-btn {
   margin-top: 12px;
   padding: 10px 16px;
   background-color: #10b981;
@@ -243,11 +255,12 @@ button:hover {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-.lanjut-btn:hover {
+
+.akses-page .lanjut-btn:hover {
   background-color: #059669;
 }
 
-.copy-btn {
+.akses-page .copy-btn {
   margin-left: 10px;
   padding: 4px 8px;
   font-size: 13px;
@@ -258,11 +271,12 @@ button:hover {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-.copy-btn:hover {
+
+.akses-page .copy-btn:hover {
   background-color: #2563eb;
 }
 
-#toast-container {
+.akses-page #toast-container {
   position: fixed;
   top: 30px;
   left: 50%;
@@ -273,7 +287,7 @@ button:hover {
   align-items: center;
 }
 
-.toast {
+.akses-page .toast {
   background-color: #323232;
   color: white;
   padding: 12px 16px;
@@ -293,12 +307,92 @@ button:hover {
   to   { opacity: 0; transform: translateY(20px); }
 }
 
-.highlight {
+@media (max-width: 600px) {
+  .akses-page {
+    padding: 16px;
+  }
+
+  .akses-page h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .akses-page input[type="text"],
+  .akses-page select {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .akses-page .school-name {
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+
+  .akses-page .details {
+    font-size: 14px;
+    padding: 14px;
+  }
+
+  .akses-page .details strong {
+    width: 100px;
+  }
+
+  .akses-page .lanjut-btn {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .akses-page .copy-btn {
+    padding: 4px 10px;
+    font-size: 13px;
+  }
+
+  .akses-page #toast-container {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .akses-page .toast {
+    font-size: 14px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  .akses-page .school-name:hover {
+    transform: none;
+  }
+}
+
+.akses-page .highlight {
   background-color: yellow;
   font-weight: bold;
 }
 
-button.reset-btn {
+.akses-page select {
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.akses-page select:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.akses-page button.reset-btn {
   background-color: #ef4444;
   color: white;
   border: none;
@@ -311,11 +405,12 @@ button.reset-btn {
   align-items: center;
   gap: 6px;
 }
-button.reset-btn:hover {
+
+.akses-page button.reset-btn:hover {
   background-color: #dc2626;
 }
 
-.export-btn {
+.akses-page .export-btn {
   padding: 10px 16px;
   background-color: #2563eb;
   color: white;
@@ -325,60 +420,8 @@ button.reset-btn:hover {
   font-size: 14px;
   transition: background-color 0.2s ease;
 }
-.export-btn:hover {
+
+.akses-page .export-btn:hover {
   background-color: #1d4ed8;
 }
 
-@media (max-width: 600px) {
-  .kd-body {
-    padding: 16px;
-  }
-
-  .kd-body h2 {
-    font-size: 18px;
-    text-align: center;
-  }
-
-  .school-name {
-    font-size: 15px;
-    padding: 10px 14px;
-  }
-
-  .details {
-    font-size: 14px;
-    padding: 14px;
-  }
-
-  .details strong {
-    width: 100px;
-  }
-
-  .lanjut-btn {
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
-  }
-
-  .copy-btn {
-    padding: 4px 10px;
-    font-size: 13px;
-  }
-
-  #toast-container {
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 300px;
-  }
-
-  .toast {
-    font-size: 14px;
-    padding: 10px 14px;
-    text-align: center;
-  }
-
-  .school-name:hover {
-    transform: none;
-  }
-}
