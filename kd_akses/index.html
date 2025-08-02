@@ -248,6 +248,15 @@
   </style>
 </head>
 <body>
+
+    <!-- 🛡️ Tambahkan ini DI SINI -->
+  <script>
+    const kodeAdmin = localStorage.getItem('kode_akses');
+    if (kodeAdmin !== 'admin889') {
+      window.location.href = '../index.html';
+    }
+  </script>
+  
   <h2> <center>DAFTAR KODE AKSES SEKOLAH</center></h2>
   <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
     <select id="filterKecamatan">
