@@ -40,17 +40,6 @@
       position: relative;
     }
 
-    #kodeLabel {
-      position: absolute;
-      right: 30px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      background-color: rgba(255,255,255,0.15);
-      padding: 6px 12px;
-      border-radius: 20px;
-    }
-
     #toggleMode {
       position: absolute;
       left: 20px;
@@ -134,6 +123,45 @@
         transform: none;
       }
     }
+
+    #topBarRight {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #adminBtn {
+      padding: 6px 14px;
+      font-size: 13px;
+      background-color: white;
+      color: #3246a8;
+      border: none;
+      border-radius: 20px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #adminBtn:hover {
+      background-color: #f0f0f0;
+    }
+
+    #kodeLabel {
+      font-size: 13px;
+      background-color: white;
+      color: #3246a8;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 500;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      line-height: 1;
+    }
+    
   </style>
 </head>
 <body>
@@ -141,7 +169,11 @@
   <header>
     <i class="fas fa-school" id="toggleMode" title="Ganti Mode"></i>
     Selamat Datang di Aplikasi Aset Disdikbud
-    <div id="kodeLabel" style="display:none;"></div>
+
+    <div id="topBarRight">
+      <div id="kodeLabel" style="display: none;">Kode Akses: </div>
+      <button id="adminBtn" style="display: none;">📂 Lihat Kode Akses</button>
+    </div>
   </header>
 
   <main>
@@ -186,13 +218,22 @@
   
   async function cekKode() {
     const kode = document.getElementById('kodeAkses').value.trim().toLowerCase();
+
     if (!kode) return alert("Silakan masukkan kode akses.");
-  
+
+    if (kode === "admin889") {
+      const adminBtn = document.getElementById('adminBtn');
+      adminBtn.style.display = 'inline-block';
+      adminBtn.onclick = () => window.open('cari_kode_akses.html', '_blank');
+      return;
+    }
+
+    // lanjut ke pengecekan kode akses sekolah seperti biasa
     if (!dataSekolah.length) {
       try { dataSekolah = await ambilData(); } 
       catch (e) { alert('Gagal mengambil data: ' + e); return; }
     }
-  
+
     const hasil = dataSekolah.find(x => x.kode_akses.toLowerCase() === kode);
     if (hasil) {
       document.getElementById('school-name').innerText = hasil.nama_sekolah;
@@ -201,6 +242,7 @@
       document.getElementById('kodeLabel').style.display = 'inline-block';
       document.getElementById('login-box').style.display = 'none';
       document.getElementById('result-box').classList.add('show');
+      document.getElementById('adminBtn').style.display = 'none';
     } else {
       alert('Kode akses tidak ditemukan.');
     }
@@ -254,6 +296,11 @@
   document.getElementById('toggleMode').onclick = () => {
     document.body.classList.toggle('dark');
   };
+
+  document.getElementById('adminBtn').onclick = () => {
+    window.open('cari_kode_akses.html', '_blank');
+  };
+
   </script>
 
 </body>
