@@ -185,8 +185,10 @@ button:hover {
     transform: none;
   }
 }
-/* ini style kd_akses*/
 
+
+/* --------------------- */
+/* 📄 STYLE: Halaman Kode Akses Sekolah */
 .akses-page {
   font-family: 'Segoe UI', sans-serif;
   background-color: #f5f7fa;
@@ -211,6 +213,7 @@ button:hover {
   border: 1px solid #ccc;
   border-radius: 8px;
   box-sizing: border-box;
+  margin-bottom: 14px;
 }
 
 .akses-page .school-name {
@@ -307,66 +310,6 @@ button:hover {
   to   { opacity: 0; transform: translateY(20px); }
 }
 
-@media (max-width: 600px) {
-  .akses-page {
-    padding: 16px;
-  }
-
-  .akses-page h2 {
-    font-size: 18px;
-    text-align: center;
-  }
-
-  .akses-page input[type="text"],
-  .akses-page select {
-    font-size: 15px;
-    padding: 10px;
-  }
-
-  .akses-page .school-name {
-    font-size: 15px;
-    padding: 10px 14px;
-  }
-
-  .akses-page .details {
-    font-size: 14px;
-    padding: 14px;
-  }
-
-  .akses-page .details strong {
-    width: 100px;
-  }
-
-  .akses-page .lanjut-btn {
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
-  }
-
-  .akses-page .copy-btn {
-    padding: 4px 10px;
-    font-size: 13px;
-  }
-
-  .akses-page #toast-container {
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 300px;
-  }
-
-  .akses-page .toast {
-    font-size: 14px;
-    padding: 10px 14px;
-    text-align: center;
-  }
-
-  .akses-page .school-name:hover {
-    transform: none;
-  }
-}
-
 .akses-page .highlight {
   background-color: yellow;
   font-weight: bold;
@@ -420,8 +363,65 @@ button:hover {
   font-size: 14px;
   transition: background-color 0.2s ease;
 }
-
 .akses-page .export-btn:hover {
   background-color: #1d4ed8;
 }
 
+@media (max-width: 600px) {
+  .akses-page {
+    padding: 16px;
+  }
+
+  .akses-page h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .akses-page input[type="text"], .akses-page select {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .akses-page .school-name {
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+
+  .akses-page .details {
+    font-size: 14px;
+    padding: 14px;
+  }
+
+  .akses-page .details strong {
+    width: 100px;
+  }
+
+  .akses-page .lanjut-btn {
+    width: 100%;
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .akses-page .copy-btn {
+    padding: 4px 10px;
+    font-size: 13px;
+  }
+
+  .akses-page #toast-container {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 300px;
+  }
+
+  .akses-page .toast {
+    font-size: 14px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  .akses-page .school-name:hover {
+    transform: none;
+  }
+}
