@@ -14,32 +14,27 @@
   <!-- CSS terpisah -->
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="kd_akses">
 
-  <div class="kd_akses">
+  <h2><center>DAFTAR KODE AKSES SEKOLAH</center></h2>
 
-    <h2><center>DAFTAR KODE AKSES SEKOLAH</center></h2>
-
-    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
-      <select id="filterKecamatan">
-        <option value="">Semua Kecamatan</option>
-      </select>
-      <button id="resetBtn" class="reset-btn">🧹 Reset Filter</button>
-    </div>
-
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-      <button id="exportExcelBtn" class="export-btn">⬇️ Export Excel</button>
-      <button id="exportPdfBtn" class="export-btn">📄 Export PDF</button>
-    </div>
-
-    <div id="toast-container"></div>
-
-    <input type="text" id="searchInput" placeholder="Cari nama sekolah..." style="width: 100%; padding: 8px; margin-bottom: 20px;">
-    <div id="schoolList"></div>
-
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+    <select id="filterKecamatan">
+      <option value="">Semua Kecamatan</option>
+    </select>
+    <button id="resetBtn" class="reset-btn">🧹 Reset Filter</button>
   </div>
 
-  <!-- Script lokal -->
+  <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+    <button id="exportExcelBtn" class="export-btn">⬇️ Export Excel</button>
+    <button id="exportPdfBtn" class="export-btn">📄 Export PDF</button>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <input type="text" id="searchInput" placeholder="Cari nama sekolah..." style="width: 100%; padding: 8px; margin-bottom: 20px;">
+  <div id="schoolList"></div>
+
   <script src="../js/config.js"></script>
   <script src="../js/kode_akses.js"></script>
 
