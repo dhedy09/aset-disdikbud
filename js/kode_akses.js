@@ -74,7 +74,7 @@ function showDetails(item, container) {
             <button class="lanjut-btn">Lanjutkan</button>
           </a>
         </div>`
-      : `<div>File kertas kerja belum ada, silakan buat dulu.</div>`}
+      : `<div>File kertas kerja belum ada, silahkan buat dulu.</div>`}
   `;
   container.insertAdjacentElement('afterend', detailDiv);
 }
