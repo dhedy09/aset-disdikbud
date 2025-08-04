@@ -69,7 +69,7 @@ function showDetails(item, container) {
     <strong>Operator:</strong> ${item.operator}<br><br>
     ${item.alamat_link
       ? `<div>
-          File kertas kerja sudah ada, silakan klik tombol lanjutkan di bawah ini.<br><br>
+          File kertas kerja sudah ada, silahkan klik tombol lanjutkan di bawah ini.<br><br>
           <a href="${item.alamat_link}" target="_blank" class="lanjut-link">
             <button class="lanjut-btn">Lanjutkan</button>
           </a>
